@@ -14,6 +14,7 @@ class DataStore {
 
     static let sharedDataStore = DataStore()
     
+    var messages: [Message] = []
     
     // MARK: - Core Data Saving support
     
@@ -31,10 +32,23 @@ class DataStore {
         }
     }
     
-//        func fetchData ()
-//        {
-//         perform a fetch request to fill an array property on your datastore
-//        }
+        func fetchData ()
+        {
+         //perform a fetch request to fill an array property on your datastore
+            
+            let fetchRequest = NSFetchRequest.init(entityName: "Message")
+            
+            do {
+                
+                try self.messages = managedObjectContext.executeFetchRequest(fetchRequest) as! [Message]
+                
+            } catch {
+                
+                print("Fetch Error")
+            }
+            
+            
+        }
 
     // MARK: - Core Data stack
     // Managed Object Context property getter. This is where we've dropped our "boilerplate" code.
@@ -50,7 +64,7 @@ class DataStore {
     
     lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
-        let modelURL = NSBundle.mainBundle().URLForResource("<#XCDATAMODELD_NAME#>", withExtension: "momd")!
+        let modelURL = NSBundle.mainBundle().URLForResource("slapChat", withExtension: "momd")!
         return NSManagedObjectModel(contentsOfURL: modelURL)!
     }()
     
@@ -87,4 +101,31 @@ class DataStore {
         let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
         return urls[urls.count-1]
     }()
+    
+    func generateTestData() {
+        
+        
+        
+        let messageToJohn = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: self.managedObjectContext) as! Message
+        
+        messageToJohn.content = "Hey Dude!"
+        messageToJohn.createdAt = "07/11/2016"
+        
+        
+        let messageToMary = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: self.managedObjectContext) as! Message
+        
+        messageToMary.content = "What's up"
+        messageToMary.createdAt = "07/21/2016"
+        
+        let messageToSam = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: self.managedObjectContext) as! Message
+        
+        messageToSam.content = "What Time?"
+        messageToSam.createdAt = "06/22/2016"
+        
+        self.saveContext()
+        self.fetchData()
+        
+    }
+    
+    
 }
